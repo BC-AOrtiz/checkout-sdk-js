@@ -29,7 +29,7 @@ import PaymentActionCreator from '../../payment-action-creator';
 import PaymentMethodActionCreator from '../../payment-method-action-creator';
 import { getPaymentMethodsState, getStripeV3 } from '../../payment-methods.mock';
 
-import { StripeResponse } from './stripev3';
+import { StripePaymentIntentResponse } from './stripev3';
 import StripeV3PaymentStrategy from './stripev3-payment-strategy';
 import StripeV3ScriptLoader from './stripev3-script-loader';
 import {
@@ -185,7 +185,7 @@ describe('StripeV3PaymentStrategy', () => {
         });
 
         it('throws an error when handleCardPayment retrieve an error', async () => {
-            const stripeV3HandleCardResponseError: StripeResponse = {
+            const stripeV3HandleCardResponseError: StripePaymentIntentResponse = {
                 error: {
                     type: 'error',
                     code: 'ABC',
@@ -206,7 +206,7 @@ describe('StripeV3PaymentStrategy', () => {
         });
 
         it('throws an error when handleCardPayment will not retrieve a paymentIntent id', async () => {
-            const stripeV3HandleCardResponseError: StripeResponse = {
+            const stripeV3HandleCardResponseError: StripePaymentIntentResponse = {
                 paymentIntent: {},
             };
             stripeV3JsMock.handleCardPayment = jest.fn(

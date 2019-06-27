@@ -2,7 +2,7 @@ import OrderRequestBody from '../../../order/order-request-body';
 import { PaymentInitializeOptions } from '../../payment-request-options';
 
 import {
-    StripeResponse,
+    StripePaymentIntentResponse,
     StripeV3Client
 } from './stripev3';
 
@@ -19,6 +19,7 @@ export function getStripeV3JsMock(): StripeV3Client {
             };
         }),
         handleCardPayment: jest.fn(),
+        createPaymentMethod: jest.fn(),
     };
 }
 
@@ -54,7 +55,7 @@ export function getStripeV3OrderRequestBodyMock(): OrderRequestBody {
     };
 }
 
-export function getStripeV3HandleCardResponse(): StripeResponse {
+export function getStripeV3HandleCardResponse(): StripePaymentIntentResponse {
     return {
         paymentIntent: {
             id: 'pi_1234',

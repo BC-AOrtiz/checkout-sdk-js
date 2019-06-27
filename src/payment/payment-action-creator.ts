@@ -5,7 +5,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 
 import { mapToInternalAddress } from '../address';
 import { mapToInternalCart } from '../cart';
-import { InternalCheckoutSelectors } from '../checkout';
+import {CheckoutStore, InternalCheckoutSelectors} from '../checkout';
 import { throwErrorAction } from '../common/error';
 import { StandardError } from '../common/error/errors';
 import { mapToInternalCustomer } from '../customer';
@@ -14,7 +14,11 @@ import { mapToInternalShippingOption } from '../shipping';
 
 import isVaultedInstrument from './is-vaulted-instrument';
 import Payment from './payment';
-import { InitializeOffsitePaymentAction, PaymentActionType, SubmitPaymentAction } from './payment-actions';
+import {
+    InitializeOffsitePaymentAction,
+    PaymentActionType,
+    SubmitPaymentAction
+} from './payment-actions';
 import PaymentMethod from './payment-method';
 import PaymentMethodSelector from './payment-method-selector';
 import PaymentRequestBody from './payment-request-body';
@@ -58,6 +62,23 @@ export default class PaymentActionCreator {
                 catchError(error => throwErrorAction(PaymentActionType.InitializeOffsitePaymentFailed, error))
             );
         };
+    }
+
+    generatePaymentIntent(
+        methodId: string,
+        shouldSavePaymentInstrument: boolean,
+        store: CheckoutStore,
+        gatewayId?: string
+    ): Promise<string> {
+        const payload = {
+            ...this._getPaymentRequestBody({ gatewayId, methodId }, store.getState()),
+            shouldSavePaymentInstrument,
+        };
+
+        return this._paymentRequestSender.generatePaymentIntent(payload)
+            .then(response => {
+                return response.body.client_token;
+            });
     }
 
     private _getPaymentRequestBody(payment: Payment, state: InternalCheckoutSelectors): PaymentRequestBody {
