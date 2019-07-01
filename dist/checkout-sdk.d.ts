@@ -2830,6 +2830,11 @@ declare interface OrderRequestBody {
      * works if the customer has previously signed in.
      */
     useStoreCredit?: boolean;
+    /**
+     * If true, apply to save the credit card as an instrument. It only works if a hosted field needs
+     * to be vaulted.
+     */
+    shouldSaveInstrument?: boolean;
 }
 
 declare interface PasswordRequirements {
