@@ -49,12 +49,14 @@ import {
     AdyenCardState,
     AdyenCheckout,
     AdyenComponent,
-    ResultCode
 } from './adyenv2';
 import {
     getAdyenCheckout,
     getAdyenInitializeOptions,
+    getChallengeShopperErrorResponse,
+    getIdentifyShopperErrorResponse,
     getInvalidCardState,
+    getRedirectShopperErrorResponse,
     getValidCardState,
     getValidChallengeResponse
 } from './adyenv2.mock';
@@ -265,15 +267,7 @@ describe('AdyenV2PaymentStrategy', () => {
         it('submits payment with adyen state', async () => {
             const error = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.ChallengeShopper,
-                    token: 'token',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getChallengeShopperErrorResponse(),
             }));
             let handleOnChange: (state: AdyenCardState) => {};
 
@@ -370,15 +364,7 @@ describe('AdyenV2PaymentStrategy', () => {
         it('returns 3DS2 IndentifyShopper flow', async () => {
             const error = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.IdentifyShopper,
-                    token: 'token',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getIdentifyShopperErrorResponse(),
             }));
 
             jest.spyOn(adyenCheckout, 'create')
@@ -403,7 +389,7 @@ describe('AdyenV2PaymentStrategy', () => {
                 methodId: 'authorizenet',
                 paymentData: {
                     nonce: JSON.stringify({
-                        ...{ threeDS2Token: 'token' },
+                        threeDS2Token: 'token',
                         paymentData: 'paymentData',
                     }, null, 2),
                 },
@@ -418,15 +404,7 @@ describe('AdyenV2PaymentStrategy', () => {
         it('returns 3DS2 IndentifyShopper flow and Adyen response onError', async () => {
             const error = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.IdentifyShopper,
-                    token: 'token',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getIdentifyShopperErrorResponse(),
             }));
 
             threeDS2Component = {
@@ -469,27 +447,11 @@ describe('AdyenV2PaymentStrategy', () => {
         it('returns 3DS2 IndentifyShopper flow and responses ChallengeShopper flow', async () => {
             const error = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.IdentifyShopper,
-                    token: 'token',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getIdentifyShopperErrorResponse(),
             }));
             const errorChallenge = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.ChallengeShopper,
-                    token: 'chellengeToken',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getChallengeShopperErrorResponse(),
             }));
             const threeDS2ChallengeComponent: AdyenComponent = {
                 mount: jest.fn(() => {
@@ -532,7 +494,7 @@ describe('AdyenV2PaymentStrategy', () => {
                 methodId: 'authorizenet',
                 paymentData: {
                     nonce: JSON.stringify({
-                        ...{ threeDS2Token: 'challengeToken' },
+                        threeDS2Token: 'challengeToken',
                         paymentData: 'paymentData',
                     }, null, 2),
                 },
@@ -547,15 +509,7 @@ describe('AdyenV2PaymentStrategy', () => {
         it('returns 3DS2 IndentifyShopper flow and after that throws an error when submit payment', async () => {
             const error = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.IdentifyShopper,
-                    token: 'token',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getIdentifyShopperErrorResponse(),
             }));
 
             jest.spyOn(adyenCheckout, 'create')
@@ -593,28 +547,12 @@ describe('AdyenV2PaymentStrategy', () => {
         it('returns 3DS2 IndentifyShopper flow and after that throws a unexpected error when submit payment', async () => {
             const error = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.IdentifyShopper,
-                    token: 'token',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getIdentifyShopperErrorResponse(),
             }));
 
             const errorUnexpected = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.IdentifyShopper,
-                    token: 'challengeToken',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getIdentifyShopperErrorResponse(),
             }));
 
             jest.spyOn(adyenCheckout, 'create')
@@ -642,15 +580,7 @@ describe('AdyenV2PaymentStrategy', () => {
         it('throws when Adyen JS is not loaded and submitPayment retrieves IdentifyShopper', async () => {
             const error = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.IdentifyShopper,
-                    token: 'token',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getIdentifyShopperErrorResponse(),
             }));
 
             jest.spyOn(adyenV2ScriptLoader, 'load').mockReturnValue(Promise.resolve(adyenCheckout));
@@ -666,15 +596,7 @@ describe('AdyenV2PaymentStrategy', () => {
         it('returns 3DS2 ChallengeShopper flow', async () => {
             const error = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.ChallengeShopper,
-                    token: 'token',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getChallengeShopperErrorResponse(),
             }));
 
             jest.spyOn(adyenCheckout, 'create')
@@ -699,7 +621,7 @@ describe('AdyenV2PaymentStrategy', () => {
                 methodId: 'authorizenet',
                 paymentData: {
                     nonce: JSON.stringify({
-                        ...{ threeDS2Token: 'token' },
+                        threeDS2Token: 'token',
                         paymentData: 'paymentData',
                     }, null, 2),
                 },
@@ -714,15 +636,7 @@ describe('AdyenV2PaymentStrategy', () => {
         it('returns 3DS2 ChallengeShopper flow and Adyen response onError', async () => {
             const error = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.ChallengeShopper,
-                    token: 'token',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getChallengeShopperErrorResponse(),
             }));
 
             threeDS2Component = {
@@ -765,15 +679,7 @@ describe('AdyenV2PaymentStrategy', () => {
         it('throws when Adyen JS is not loaded and submitPayment retrieves ChallengeShopper', async () => {
             const error = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.ChallengeShopper,
-                    token: 'token',
-                    payment_data: 'paymentData',
-                },
-                status: 'error',
+                ...getChallengeShopperErrorResponse(),
             }));
 
             jest.spyOn(adyenV2ScriptLoader, 'load').mockReturnValue(Promise.resolve(adyenCheckout));
@@ -789,17 +695,7 @@ describe('AdyenV2PaymentStrategy', () => {
         it('returns ReedirectShopper 3DS Flow', async () => {
             const error = new RequestError(getResponse({
                 ...getErrorPaymentResponseBody(),
-                errors: [
-                    { code: 'three_d_secure_required' },
-                ],
-                three_ds_result: {
-                    result_code: ResultCode.RedirectShopper,
-                    acs_url: 'https://acs/url',
-                    callback_url: 'https://callback/url',
-                    payer_auth_request: 'payer_auth_request',
-                    merchant_data: 'merchant_data',
-                },
-                status: 'error',
+                ...getRedirectShopperErrorResponse(),
             }));
 
             jest.spyOn(paymentActionCreator, 'submitPayment')

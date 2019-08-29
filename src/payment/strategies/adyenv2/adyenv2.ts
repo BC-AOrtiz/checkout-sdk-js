@@ -619,3 +619,19 @@ export interface ThreeDS2OnComplete {
         };
     };
 }
+
+export interface ThreeDSRequiredErrorResponse {
+    errors: [
+        { code: string }
+    ];
+    three_ds_result: {
+        result_code: ResultCode;
+        token?: string;
+        payment_data?: string;
+        acs_url?: string;
+        callback_url?: string;
+        payer_auth_request?: string;
+        merchant_data?: string;
+    };
+    status: string;
+}

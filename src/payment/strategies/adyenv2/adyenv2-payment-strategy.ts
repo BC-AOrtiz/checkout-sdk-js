@@ -51,7 +51,7 @@ export default class AdyenV2PaymentStrategy implements PaymentStrategy {
         const { adyenv2 } = options;
 
         if (!adyenv2) {
-            throw new InvalidArgumentError('Unable to initialize payment because "options.adyen" argument is not provided.');
+            throw new InvalidArgumentError('Unable to initialize payment because "options.adyenv2" argument is not provided.');
         }
 
         const paymentMethod = this._store.getState().paymentMethods.getPaymentMethod(options.methodId);
@@ -176,7 +176,7 @@ export default class AdyenV2PaymentStrategy implements PaymentStrategy {
 
     private _getAdyenV2PaymentInitializeOptions(): AdyenV2PaymentInitializeOptions {
         if (!this._adyenv2) {
-            throw new InvalidArgumentError(' "options.adyen" argument was not provided during initialization.');
+            throw new InvalidArgumentError(' "options.adyenv2" argument was not provided during initialization.');
         }
 
         return this._adyenv2;

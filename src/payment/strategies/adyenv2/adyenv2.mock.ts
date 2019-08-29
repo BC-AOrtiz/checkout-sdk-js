@@ -4,7 +4,9 @@ import { PaymentInitializeOptions } from '../../payment-request-options';
 import {
     AdyenCardState,
     AdyenCheckout,
-    AdyenConfiguration
+    AdyenConfiguration,
+    ResultCode,
+    ThreeDSRequiredErrorResponse
 } from './adyenv2';
 
 export function getAdyenCheckout(): AdyenCheckout {
@@ -79,5 +81,49 @@ export function getValidChallengeResponse(): any {
     return {
         threeDS2Token: 'token',
         paymentData: 'paymentData',
+    };
+}
+
+export function getChallengeShopperErrorResponse(): ThreeDSRequiredErrorResponse {
+    return {
+        errors: [
+            { code: 'three_d_secure_required' },
+        ],
+        three_ds_result: {
+            result_code: ResultCode.ChallengeShopper,
+            token: 'token',
+            payment_data: 'paymentData',
+        },
+        status: 'error',
+    };
+}
+
+export function getIdentifyShopperErrorResponse(): ThreeDSRequiredErrorResponse {
+    return {
+        errors: [
+            { code: 'three_d_secure_required' },
+        ],
+        three_ds_result: {
+            result_code: ResultCode.IdentifyShopper,
+            token: 'token',
+            payment_data: 'paymentData',
+        },
+        status: 'error',
+    };
+}
+
+export function getRedirectShopperErrorResponse(): ThreeDSRequiredErrorResponse {
+    return {
+        errors: [
+            { code: 'three_d_secure_required' },
+        ],
+        three_ds_result: {
+            result_code: ResultCode.RedirectShopper,
+            acs_url: 'https://acs/url',
+            callback_url: 'https://callback/url',
+            payer_auth_request: 'payer_auth_request',
+            merchant_data: 'merchant_data',
+        },
+        status: 'error',
     };
 }
