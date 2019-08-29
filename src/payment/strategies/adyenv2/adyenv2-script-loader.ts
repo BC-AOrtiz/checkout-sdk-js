@@ -1,6 +1,6 @@
 import { ScriptLoader } from '@bigcommerce/script-loader';
 
-import { StandardError } from '../../../common/error/errors';
+import { PaymentMethodClientUnavailableError } from '../../errors';
 
 import {
     AdyenCheckout,
@@ -24,13 +24,13 @@ export default class AdyenV2ScriptLoader {
                 .loadScript(`https://checkoutshopper-${configuration.environment}.adyen.com/checkoutshopper/sdk/3.0.0/adyen.js`)
                 .then(() => {
                     if (!this._window.AdyenCheckout) {
-                        throw new StandardError();
+                        throw new PaymentMethodClientUnavailableError();
                     }
 
                     return new this._window.AdyenCheckout(configuration);
                 });
         }).catch(() => {
-            throw new StandardError();
+            throw new PaymentMethodClientUnavailableError();
         });
 
     }

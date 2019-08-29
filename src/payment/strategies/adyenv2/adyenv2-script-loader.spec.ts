@@ -1,6 +1,6 @@
 import { ScriptLoader } from '@bigcommerce/script-loader';
 
-import { StandardError } from '../../../common/error/errors';
+import { PaymentMethodClientUnavailableError } from '../../errors';
 
 import { AdyenHostWindow } from './adyenv2';
 import AdyenV2ScriptLoader from './adyenv2-script-loader';
@@ -80,7 +80,7 @@ describe('AdyenV2ScriptLoader', () => {
             try {
                 await adyenV2ScriptLoader.load(configuration);
             } catch (error) {
-                expect(error).toBeInstanceOf(StandardError);
+                expect(error).toBeInstanceOf(PaymentMethodClientUnavailableError);
             }
         });
 
@@ -93,7 +93,7 @@ describe('AdyenV2ScriptLoader', () => {
             try {
                 await adyenV2ScriptLoader.load(configuration);
             } catch (error) {
-                expect(error).toBeInstanceOf(StandardError);
+                expect(error).toBeInstanceOf(PaymentMethodClientUnavailableError);
             }
         });
     });
