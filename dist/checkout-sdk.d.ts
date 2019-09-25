@@ -90,9 +90,11 @@ declare interface AdyenV2PaymentInitializeOptions {
      */
     options?: Omit<CreditCardComponentOptions, 'onChange'>;
     /**
-     * Optional. Contains all three ds 2 options
+     * Specify Three3DSChallenge Widget Size
      */
-    threeDS2Options?: ThreeDS2ComponentOptions;
+    threeDS2ChallengeWidgetSize?: string;
+    on3DSLoading?(): void;
+    on3DSComplete?(): void;
 }
 
 /**
@@ -3558,10 +3560,6 @@ declare interface Tax {
 
 declare interface TextInputStyles extends InputStyles {
     placeholder?: InlineElementStyles;
-}
-
-declare interface ThreeDS2ComponentOptions {
-    threeDS2ChallengeWidgetSize?: string;
 }
 
 declare interface ThreeDSecure {
